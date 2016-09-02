@@ -17,7 +17,7 @@ module.exports = {
 	},
 	module: {
 		preLoaders: [
-			{ test: /\.jsx?$/, loaders: ["jshint"], include: /app/ }
+			{ test: /\.jsx?$/, loaders: ["eslint"], include: /app/ }
 		],
 		loaders: [
 			{ test: /\.jsx$/, loader: "jsx-loader?insertPragma=React.DOM&harmony" },
