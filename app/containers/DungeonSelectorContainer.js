@@ -4,13 +4,16 @@ var DungeonStore = require("../stores/DungeonStore");
 var DungeonUtils = require("../utils/DungeonUtils");
 
 var _selections = {};
-var _plan = DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
+var _plan;
 
-var DungeonContainer = React.createClass({
+var DungeonSelectorContainer = React.createClass({
 	getInitialState: function() {
 		return {
 			selections: _selections
 		};
+	},
+	componentWillMount: function() {
+		_plan = DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
 	},
 	handleRoomSelection: function(y, x) {
 		var rooms = DungeonUtils.getConnectedRooms(_plan);
@@ -36,4 +39,4 @@ var DungeonContainer = React.createClass({
 	}
 });
 
-module.exports = DungeonContainer;
+module.exports = DungeonSelectorContainer;

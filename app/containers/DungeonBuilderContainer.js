@@ -10,7 +10,7 @@ function getDungeonState() {
 	return DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
 }
 
-var DungeonContainer = React.createClass({
+var DungeonBuilderContainer = React.createClass({
 	_onChange: function() {
 		this.setState({
 			plan: getDungeonState()
@@ -63,4 +63,4 @@ var DungeonContainer = React.createClass({
 	}
 });
 
-module.exports = DungeonContainer;
+module.exports = DungeonBuilderContainer;

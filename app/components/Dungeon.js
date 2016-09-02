@@ -50,7 +50,7 @@ var DungeonRoom = (props) => {
 
 	return (
 		<div 
-			className={	className} 
+			className={className}
 			style={roomStyles} 
 			onClick={props.onRoomClick}
 			onMouseOver={handleMouseDrag}		
@@ -58,6 +58,15 @@ var DungeonRoom = (props) => {
 			{optionalAvatar}
 		</div>
 	);
+};
+
+DungeonRoom.propTypes = {
+	isSelected: React.PropTypes.bool,
+	hasAvatar: React.PropTypes.bool,
+	onRoomClick: React.PropTypes.func,
+	room: React.PropTypes.instanceOf(
+		DungeonBlock
+	)
 };
 
 /**
@@ -85,6 +94,7 @@ var DungeonFloor = (props) => {
 };
 
 DungeonFloor.propTypes = {
+	level: React.PropTypes.number.isRequired,
 	rooms: React.PropTypes.arrayOf(
 		React.PropTypes.instanceOf(
 			DungeonBlock
@@ -145,6 +155,10 @@ var Dungeon = function(props) {
 			/>
 		</div>
 	);
+};
+
+Dungeon.propTypes = {
+	onKeyDown: React.PropTypes.func
 };
 
 module.exports = Dungeon;

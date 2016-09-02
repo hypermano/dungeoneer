@@ -8,7 +8,7 @@ var _position = {
 	y: 0
 };
 
-var DungeonContainer = React.createClass({	
+var DungeonCrawlerContainer = React.createClass({
 	getInitialState: function() {
 		return {			
 			position: _position
@@ -41,4 +41,4 @@ var DungeonContainer = React.createClass({
 	}
 });
 
-module.exports = DungeonContainer;
+module.exports = DungeonCrawlerContainer;
