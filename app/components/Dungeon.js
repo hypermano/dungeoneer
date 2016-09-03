@@ -145,9 +145,7 @@ var Dungeon = function(props) {
 	return (
 		<div>
 			<h1>Dungeon</h1>
-			<DungeonWing 
-				{...props}				
-			/>
+			<DungeonWing {...props} />
 		</div>
 	);
 };
