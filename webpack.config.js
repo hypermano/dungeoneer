@@ -21,7 +21,7 @@ module.exports = {
 		],
 		loaders: [
 			{ test: /\.jsx$/, loader: "jsx-loader?insertPragma=React.DOM&harmony" },
-			{ test: /\.js$/, exclude: /node_modules/, loader: "babel-loader", query: {presets: ["es2015"] } }, 
+			{ test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" },
 			{ test: /\.css$/, loader: "style-loader!css-loader" },
 			{ test: /\.scss$/, loaders: ["style", "css", "sass"] }
 		]
