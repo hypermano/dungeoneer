@@ -142,23 +142,14 @@ DungeonWing.propTypes = {
 /**
 */
 var Dungeon = function(props) {
-	var divProps = {};
-	if (props.onKeyDown) {
-		divProps.tabIndex = "1";
-		divProps.onKeyDown=props.onKeyDown;
-	}
 	return (
-		<div {...divProps}>
+		<div>
 			<h1>Dungeon</h1>
 			<DungeonWing 
 				{...props}				
 			/>
 		</div>
 	);
-};
-
-Dungeon.propTypes = {
-	onKeyDown: React.PropTypes.func
 };
 
 module.exports = Dungeon;

@@ -6,16 +6,16 @@ var DungeonUtils = require("../utils/DungeonUtils");
 var _selections = {};
 var _plan;
 
-var DungeonSelectorContainer = React.createClass({
-	getInitialState: function() {
-		return {
-			selections: _selections
-		};
-	},
-	componentWillMount: function() {
+class DungeonSelectorContainer  extends React.Component {
+	state = {
+		selections: _selections
+	};
+
+	componentWillMount() {
 		_plan = DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
-	},
-	handleRoomSelection: function(y, x) {
+	}
+
+	_handleRoomSelection(y, x) {
 		var rooms = DungeonUtils.getConnectedRooms(_plan);
 		_selections = rooms.map((floor) => floor.map((room) => room == rooms[y][x]));
 		// convert to object
@@ -27,16 +27,17 @@ var DungeonSelectorContainer = React.createClass({
 		this.setState({
 			selections: _selections
 		});
-	},
-	render: function() {
+	}
+
+	render() {
 		return (
 			<Dungeon 
 				plan={_plan}
 				selections={this.state.selections}
-				onRoomClick={this.handleRoomSelection}				
+				onRoomClick={this._handleRoomSelection.bind(this)}
 			/>
 		);
 	}
-});
+}
 
 module.exports = DungeonSelectorContainer;

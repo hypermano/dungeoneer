@@ -2,19 +2,21 @@ var React = require("react");
 var Dungeon = require("../components/Dungeon");
 var DungeonStore = require("../stores/DungeonStore");
 var DungeonUtils = require("../utils/DungeonUtils");
+var KeyBinder = require("../decorators/KeyBinder");
 
 var _position = {
 	x: 0,
 	y: 0
 };
 
-var DungeonCrawlerContainer = React.createClass({
-	getInitialState: function() {
-		return {			
-			position: _position
-		};
-	},
-	handleAvatarMove: function(event) {
+@KeyBinder
+class DungeonCrawlerContainer extends React.Component {
+
+	state = {
+		position: _position
+	};
+
+	_handleAvatarMove(event) {
 		switch(event.key) {
 		case "ArrowDown":
 			_position.y += 1; break;
@@ -29,16 +31,20 @@ var DungeonCrawlerContainer = React.createClass({
 		this.setState({
 			position: _position
 		});
-	},
-	render: function() {
+	}
+
+	componentDidMount() {
+		this.bindKey(["left", "right", "up", "down"], this._handleAvatarMove.bind(this));
+	}
+
+	render() {
 		return (
 			<Dungeon 
 				plan={DungeonUtils.schematicsToDungeonRooms(DungeonStore.get())}
 				avatarPosition={this.state.position}
-				onKeyDown={this.handleAvatarMove}
 			/>
 		);
 	}
-});
+}
 
 module.exports = DungeonCrawlerContainer;

@@ -3,6 +3,7 @@ var Dungeon = require("../components/Dungeon");
 var DungeonStore = require("../stores/DungeonStore");
 var DungeonActions = require("../actions/DungeonActions");
 var DungeonUtils = require("../utils/DungeonUtils");
+var KeyBinder = require("../decorators/KeyBinder");
 
 var _selections = {};
 
@@ -10,25 +11,29 @@ function getDungeonState() {
 	return DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
 }
 
-var DungeonBuilderContainer = React.createClass({
-	_onChange: function() {
+@KeyBinder
+class DungeonBuilderContainer extends React.Component {
+	_onChange() {
 		this.setState({
 			plan: getDungeonState()
 		});
-	},
-	getInitialState: function() {
-		return {
-			plan: getDungeonState(),
-			selections: _selections
-		};
-	},
+	}
+
+	state = {
+		plan: getDungeonState(),
+		selections: _selections
+	};
+
 	componentDidMount() {
-		DungeonStore.addChangeListener(this._onChange);
-	},
-	componentWillUnmount: function() {
-		DungeonStore.removeChangeListener(this._onChange);
-	},
-	handleRoomSelection: function(x, y) {
+		DungeonStore.addChangeListener(this._onChange.bind(this));
+		this.bindKey(["space", "1", "2", "3", "4", "5"], this.handleDungeonReshape.bind(this));
+	}
+
+	componentWillUnmount() {
+		DungeonStore.removeChangeListener(this._onChange.bind(this));
+	}
+
+	handleRoomSelection(x, y) {
 		if (!_selections[x]) {
 			_selections[x] = {};
 		}
@@ -43,24 +48,25 @@ var DungeonBuilderContainer = React.createClass({
 		this.setState({
 			selections: _selections
 		});
-	},
-	handleDungeonReshape: function(event) {
+	}
+
+	handleDungeonReshape(event) {
 		_selections = {};
 		DungeonActions.updateDungeon(this.state.selections, event.key);
 		this.setState({
 			selections: _selections
 		});
-	},
-	render: function() {
+	}
+
+	render() {
 		return (
 			<Dungeon 
 				plan={this.state.plan}
 				selections={this.state.selections}
-				onRoomClick={this.handleRoomSelection}
-				onKeyDown={this.handleDungeonReshape}
+				onRoomClick={this.handleRoomSelection.bind(this)}
 			/>
 		);
 	}
-});
+}
 
 module.exports = DungeonBuilderContainer;

@@ -40,6 +40,8 @@ function updateDungeon(selections, type) {
 	window.localStorage.setItem("schematics", JSON.stringify(_schematics));
 }
 
+const CHANGE_EVENT = "change";
+
 class DungeonStore extends EventEmitter {
 	get() {
 		return _schematics;
@@ -54,21 +56,25 @@ class DungeonStore extends EventEmitter {
 	}
 
 	removeChangeListener(callback) {
-		this.removeListener("change", callback);
+		this.removeListener(CHANGE_EVENT, callback);
 	}
 }
 
 var dungeonStore = new DungeonStore();
 
 AppDispatcher.register(function(payload) {
-	var action = payload.action;
+	if (payload.source == "VIEW_ACTION") {
+		var action = payload.action;
 
-	// switch case goes here?
-	updateDungeon(action.selections, action.roomType);
+		// switch case goes here?
+		updateDungeon(action.selections, action.roomType);
 
-	dungeonStore.emitChange();
+		dungeonStore.emitChange();
 
-	return true;
+		return true;
+	}
+
+	return false;
 });
 
 module.exports = dungeonStore;
