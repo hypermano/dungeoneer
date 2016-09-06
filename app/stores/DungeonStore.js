@@ -1,6 +1,7 @@
 var AppDispatcher = require("../dispatcher/AppDispatcher");
-var EventEmitter = require("events").EventEmitter;
 var DungeonBlockType = require("../data/DungeonBlock").DungeonBlockType;
+var EmittingStore = require("./EmittingStore");
+var DungeonConstants = require("../constants/DungeonConstants");
 
 var __ = DungeonBlockType.EMPTY;
 var $$ = new DungeonBlockType("normal1", "blue");
@@ -40,34 +41,26 @@ function updateDungeon(selections, type) {
 	window.localStorage.setItem("schematics", JSON.stringify(_schematics));
 }
 
-const CHANGE_EVENT = "change";
-
-class DungeonStore extends EventEmitter {
+class DungeonStore extends EmittingStore {
 	get() {
 		return _schematics;
-	}
-
-	emitChange () {
-		this.emit("change");
-	}
-
-	addChangeListener(callback) {
-		this.on("change", callback);
-	}
-
-	removeChangeListener(callback) {
-		this.removeListener(CHANGE_EVENT, callback);
 	}
 }
 
 var dungeonStore = new DungeonStore();
 
 AppDispatcher.register(function(payload) {
-	if (payload.source == "VIEW_ACTION") {
+	if (payload.source == DungeonConstants.SourceTypes.VIEW_ACTION) {
 		var action = payload.action;
 
-		// switch case goes here?
-		updateDungeon(action.selections, action.roomType);
+		switch (action.actionType) {
+		case DungeonConstants.ActionTypes.SCHEMATICS_UPDATE:
+			updateDungeon(action.selections, action.roomType);
+			break;
+		default:
+			return false;
+
+		}
 
 		dungeonStore.emitChange();
 

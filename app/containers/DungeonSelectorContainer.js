@@ -15,7 +15,8 @@ class DungeonSelectorContainer  extends React.Component {
 		_plan = DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
 	}
 
-	_handleRoomSelection(y, x) {
+	_handleRoomSelection(pos) {
+		var {x,y} = pos;
 		var rooms = DungeonUtils.getConnectedRooms(_plan);
 		_selections = rooms.map((floor) => floor.map((room) => room == rooms[y][x]));
 		// convert to object
@@ -35,9 +36,14 @@ class DungeonSelectorContainer  extends React.Component {
 				plan={_plan}
 				selections={this.state.selections}
 				onRoomClick={this._handleRoomSelection.bind(this)}
+				onExtraChange={this.props.onExtraChange}
 			/>
 		);
 	}
 }
+
+DungeonSelectorContainer.propTypes = {
+	onExtraChange: React.PropTypes.func
+};
 
 module.exports = DungeonSelectorContainer;

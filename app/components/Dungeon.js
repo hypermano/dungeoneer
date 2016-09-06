@@ -1,9 +1,8 @@
 var React = require("react");
 var styles = require("../styles/styles");
 var DungeonBlock = require("../data/DungeonBlock").DungeonBlock;
+var FuncUtils = require("../utils/FuncUtils");
 require("../styles/styles.scss");
-
-var NOOP = () => {};
 
 /**
 */
@@ -73,6 +72,10 @@ DungeonRoom.propTypes = {
 */
 var DungeonFloor = (props) => {
 	var rendered = props.rooms.map((room, index) => {
+		var pos = {
+			x: index,
+			y: props.level
+		};
 		var extraProps = {};
 		if (props.avatarPosition && props.avatarPosition.x == index) {
 			extraProps.hasAvatar = true;
@@ -81,7 +84,7 @@ var DungeonFloor = (props) => {
 					key={"dr-" + index}
 					room={room}
 					isSelected={props.selections && props.selections[index]}
-					onRoomClick={ props.onRoomClick.bind(null, props.level, index) }
+					onRoomClick={FuncUtils.compound(props.onRoomClick, props.onExtraChange).bind(null, pos, false)}
 					{...extraProps}
 				/>;
 	});
@@ -95,6 +98,9 @@ var DungeonFloor = (props) => {
 
 DungeonFloor.propTypes = {
 	level: React.PropTypes.number.isRequired,
+	selections: React.PropTypes.array,
+	onRoomClick: React.PropTypes.func,
+	onExtraChange: React.PropTypes.func,
 	rooms: React.PropTypes.arrayOf(
 		React.PropTypes.instanceOf(
 			DungeonBlock
@@ -106,17 +112,16 @@ DungeonFloor.propTypes = {
 */
 var DungeonWing = (props) => {
 	var floors = props.plan.map(function(floor, yIndex) {
-		var extraProps = {};
-		if (props.avatarPosition && props.avatarPosition.y == yIndex) {
-			extraProps.avatarPosition = props.avatarPosition;
+		var {selections, avatarPosition, ...rest} = props;
+		if (avatarPosition && avatarPosition.y == yIndex) {
+			rest.avatarPosition = props.avatarPosition;
 		}
 		return <DungeonFloor 
 					key={"dw-" + yIndex} 
 					level={yIndex} 
 					rooms={floor}
-					selections={props.selections? props.selections[yIndex] : []}
-					onRoomClick={props.onRoomClick || NOOP}
-					{...extraProps}
+					selections={selections? selections[yIndex] : []}
+					{...rest}
 				/>;
 	});
 
@@ -135,8 +140,9 @@ DungeonWing.propTypes = {
 				)
 			)
 		).isRequired,
-	selections: React.PropTypes.object,
-	onRoomClick: React.PropTypes.func
+	selections: React.PropTypes.array,
+	onRoomClick: React.PropTypes.func,
+	avatarPosition: React.PropTypes.object
 };
 
 /**
@@ -148,6 +154,10 @@ var Dungeon = function(props) {
 			<DungeonWing {...props} />
 		</div>
 	);
+};
+
+Dungeon.propTypes = {
+	selections: React.PropTypes.array
 };
 
 module.exports = Dungeon;

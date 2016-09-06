@@ -11,7 +11,7 @@
     "production": "webpack -p",
     "test": "mocha --require ignore-styles --compilers js:babel-core/register --recursive",
     "test:lint": "eslint . --format node_modules/eslint-friendly-formatter --ext .js --ext .jsx --cache",
-    "dev:hot": "webpack-dev-server --hot --inline --progress --colors --watch --display-error-details --display-cached --content-base ./"
+    "dev:hot": "webpack-dev-server --hot --inline --watch"
   },
   "author": "",
   "license": "ISC",

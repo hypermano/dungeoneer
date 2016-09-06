@@ -5,56 +5,62 @@ var DungeonActions = require("../actions/DungeonActions");
 var DungeonUtils = require("../utils/DungeonUtils");
 var KeyBinder = require("../decorators/KeyBinder");
 
-var _selections = {};
-
 function getDungeonState() {
 	return DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
 }
 
 @KeyBinder
 class DungeonBuilderContainer extends React.Component {
+
+	state = {
+		plan: getDungeonState(),
+		selections: this._selections
+	};
+
+	constructor() {
+		super();
+		this._selections = {};
+		this._onChange = this._onChange.bind(this);
+	}
+
 	_onChange() {
 		this.setState({
 			plan: getDungeonState()
 		});
 	}
 
-	state = {
-		plan: getDungeonState(),
-		selections: _selections
-	};
-
 	componentDidMount() {
-		DungeonStore.addChangeListener(this._onChange.bind(this));
+		DungeonStore.addChangeListener(this._onChange);
 		this.bindKey(["space", "1", "2", "3", "4", "5"], this.handleDungeonReshape.bind(this));
 	}
 
 	componentWillUnmount() {
-		DungeonStore.removeChangeListener(this._onChange.bind(this));
+		DungeonStore.removeChangeListener(this._onChange);
 	}
 
-	handleRoomSelection(x, y) {
-		if (!_selections[x]) {
-			_selections[x] = {};
+	_handleRoomSelection(pos) {
+		var {x,y} = pos;
+		if (!this._selections[y]) {
+			this._selections[y] = {};
 		}
-		if (_selections[x][y]) {
-			delete _selections[x][y];
+		if (this._selections[y][x]) {
+			delete this._selections[y][x];
 		} else {
-			_selections[x][y] = true;
+			this._selections[y][x] = true;
 		}
-		if (Object.keys(_selections[x]).length === 0) {
-			delete _selections[x];
+		if (Object.keys(this._selections[y]).length === 0) {
+			delete this._selections[y];
 		}
 		this.setState({
-			selections: _selections
+			selections: this._selections
 		});
 	}
 
 	handleDungeonReshape(event) {
-		_selections = {};
+		this._selections = {};
 		DungeonActions.updateDungeon(this.state.selections, event.key);
 		this.setState({
-			selections: _selections
+			selections: this._selections
 		});
 	}
 
@@ -63,7 +69,7 @@ class DungeonBuilderContainer extends React.Component {
 			<Dungeon 
 				plan={this.state.plan}
 				selections={this.state.selections}
-				onRoomClick={this.handleRoomSelection.bind(this)}
+				onRoomClick={this._handleRoomSelection.bind(this)}
 			/>
 		);
 	}

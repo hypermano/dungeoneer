@@ -1,3 +1,21 @@
+.navigation {
+	position: relative;
+}
+
+.navigation--button {
+	position: absolute;
+}
+
+.navigation--button__left {
+	@extend .navigation--button;
+	left: 0;
+}
+
+.navigation--button__right {
+	@extend .navigation--button;
+	right: 0;
+}
+
 .dungeon--room {
 	display: inline-block;
     height: 52px;
