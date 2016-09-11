@@ -1,4 +1,5 @@
 require('babel-register')();
+require('jsdom-global')();
 
 var jsdom = require('jsdom');
 
@@ -17,4 +18,8 @@ Object.keys(document.defaultView).forEach((property) => {
 
 global.navigator = {
 	userAgent: 'node.js'
+};
+
+global.window.localStorage = {
+	getItem: function() {}
 };

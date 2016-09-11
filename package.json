@@ -9,7 +9,7 @@
   },
   "scripts": {
     "production": "webpack -p",
-    "test": "mocha --require ignore-styles --compilers js:babel-core/register --recursive",
+    "test": "mocha test/setup.js --recursive test/components/",
     "test:lint": "eslint . --format node_modules/eslint-friendly-formatter --ext .js --ext .jsx --cache",
     "dev:hot": "webpack-dev-server --hot --inline --watch"
   },
@@ -43,7 +43,9 @@
     "eslint-loader": "^1.5.0",
     "eslint-plugin-react": "^6.2.0",
     "html-webpack-plugin": "^2.22.0",
-    "jsdom": "^9.4.5",
+    "ignore-styles": "^5.0.1",
+    "jsdom": "9.5.0",
+    "jsdom-global": "2.1.0",
     "jsx-loader": "^0.13.2",
     "mocha": "^3.0.2",
     "node-sass": "^3.8.0",
