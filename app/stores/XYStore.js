@@ -2,14 +2,18 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EmittingStore = require("./EmittingStore");
 var DungeonConstants = require("../constants/DungeonConstants");
 
-var _position = {
+var _avatarPosition = {
 	x: 0,
 	y: 0
 };
+var _clickPosition = {
+	x: null,
+	y: null
+};
 
-function updateCoordinates(x, y) {
-	_position.x = x;
-	_position.y = y;
+function updateAvatarCoordinates(x, y) {
+	_avatarPosition.x = x;
+	_avatarPosition.y = y;
 }
 
 class XYStore extends EmittingStore {
@@ -17,11 +21,17 @@ class XYStore extends EmittingStore {
 		super();
 	}
 
-	getX() {
-		return _position.x;
+	getAvatarX() {
+		return _avatarPosition.x;
 	}
-	getY() {
-		return _position.y;
+	getAvatarY() {
+		return _avatarPosition.y;
+	}
+	getClickX() {
+		return _clickPosition.x;
+	}
+	getClickY() {
+		return _clickPosition.y;
 	}
 }
 
@@ -32,8 +42,8 @@ AppDispatcher.register(function(payload) {
 		var action = payload.action;
 
 		switch (action.actionType) {
-		case DungeonConstants.ActionTypes.UPDATE_COORDINATES:
-			updateCoordinates(action.x, action.y);
+		case DungeonConstants.ActionTypes.UPDATE_AVATAR_COORDINATES:
+			updateAvatarCoordinates(action.x, action.y);
 			break;
 		default:
 			return false;

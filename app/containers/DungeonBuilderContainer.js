@@ -1,44 +1,26 @@
 var React = require("react");
 var Dungeon = require("../components/Dungeon");
-var DungeonStore = require("../stores/DungeonStore");
 var DungeonActions = require("../actions/DungeonActions");
-var DungeonUtils = require("../utils/DungeonUtils");
 var KeyBinder = require("../decorators/KeyBinder");
-
-function getDungeonState() {
-	return DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
-}
+var DungeonBlock = require("../data/DungeonBlock").DungeonBlock;
 
 @KeyBinder
 class DungeonBuilderContainer extends React.Component {
 
 	state = {
-		plan: getDungeonState(),
 		selections: this._selections
 	};
 
 	constructor() {
 		super();
-		this._selections = {};
-		this._onChange = this._onChange.bind(this);
-	}
-
-	_onChange() {
-		this.setState({
-			plan: getDungeonState()
-		});
+		this._selections = [];
 	}
 
 	componentDidMount() {
-		DungeonStore.addChangeListener(this._onChange);
 		this.bindKey(["space", "1", "2", "3", "4", "5"], this.handleDungeonReshape.bind(this));
 	}
 
-	componentWillUnmount() {
-		DungeonStore.removeChangeListener(this._onChange);
-	}
-
-	_handleRoomSelection(pos) {
+	_handleRoomSelection({pos}) {
 		var {x,y} = pos;
 		if (!this._selections[y]) {
 			this._selections[y] = {};
@@ -67,12 +49,22 @@ class DungeonBuilderContainer extends React.Component {
 	render() {
 		return (
 			<Dungeon 
-				plan={this.state.plan}
+				plan={this.props.plan}
 				selections={this.state.selections}
 				onRoomClick={this._handleRoomSelection.bind(this)}
 			/>
 		);
 	}
 }
+
+DungeonBuilderContainer.propTypes = {
+	plan: React.PropTypes.arrayOf(
+		React.PropTypes.arrayOf(
+			React.PropTypes.instanceOf(
+				DungeonBlock
+				)
+			)
+		)
+};
 
 module.exports = DungeonBuilderContainer;

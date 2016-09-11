@@ -1,49 +1,46 @@
 var React = require("react");
 var Dungeon = require("../components/Dungeon");
+var FuncUtils = require("../utils/FuncUtils");
 var DungeonStore = require("../stores/DungeonStore");
-var DungeonUtils = require("../utils/DungeonUtils");
-
-var _selections = {};
-var _plan;
 
 class DungeonSelectorContainer  extends React.Component {
 	state = {
-		selections: _selections
+		selections: this._selections
 	};
 
-	componentWillMount() {
-		_plan = DungeonUtils.schematicsToDungeonRooms(DungeonStore.get());
+	constructor() {
+		super();
+		this._selections = {};
 	}
 
-	_handleRoomSelection(pos) {
+	_handleRoomSelection(ctx) {
+		var pos = ctx.pos;
 		var {x,y} = pos;
-		var rooms = DungeonUtils.getConnectedRooms(_plan);
-		_selections = rooms.map((floor) => floor.map((room) => room == rooms[y][x]));
-		// convert to object
-		_selections = _selections.reduce((obj, cur, i) => {
-			obj[i] = cur;
-			return obj;
-		}, {});
-
+		var rooms = DungeonStore.getConnectedRooms();
+		this._selections = rooms.map((floor) => floor.map((room) => room == rooms[y][x]));
 		this.setState({
-			selections: _selections
+			selections: this._selections
 		});
 	}
 
 	render() {
 		return (
 			<Dungeon 
-				plan={_plan}
+				plan={this.props.plan}
 				selections={this.state.selections}
-				onRoomClick={this._handleRoomSelection.bind(this)}
-				onExtraChange={this.props.onExtraChange}
+				onRoomClick={FuncUtils.compound(this._handleRoomSelection.bind(this), this.props.onComponentChange)}
 			/>
 		);
 	}
 }
 
 DungeonSelectorContainer.propTypes = {
-	onExtraChange: React.PropTypes.func
+	onComponentChange: React.PropTypes.func,
+	plan: React.PropTypes.arrayOf(
+		React.PropTypes.arrayOf(
+			React.PropTypes.object
+			)
+		)
 };
 
 module.exports = DungeonSelectorContainer;

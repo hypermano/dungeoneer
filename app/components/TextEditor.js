@@ -1,7 +1,13 @@
 var React = require("react");
 
-const TextEditor = ({extra, onExtraChange}) => {
-	var callback = (proxy) => onExtraChange(proxy.target.value, true);
+const TextEditor = ({extra, onComponentChange}) => {
+	var callback = (proxy) => {
+		var ctx = {
+			source: "text",
+			text: proxy.target.value
+		};
+		onComponentChange(ctx);
+	};
 	return (
 		<div>
 			<div>Some text</div>
@@ -12,7 +18,7 @@ const TextEditor = ({extra, onExtraChange}) => {
 
 TextEditor.propTypes = {
 	extra: React.PropTypes.string,
-	onExtraChange: React.PropTypes.func
+	onComponentChange: React.PropTypes.func
 };
 
 module.exports = TextEditor;

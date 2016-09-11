@@ -10,6 +10,14 @@ var DungeonActions = {
 			selections: selections,
 			roomType: type
 		});
+	},
+	updateRoomDescription: function(posX, posY, description) {
+		AppDispatcher.handleViewAction({
+			actionType: ActionTypes.ROOM_DESCRIPTION_CHANGE,
+			posX: posX,
+			posY: posY,
+			description: description
+		});
 	}
 };
 

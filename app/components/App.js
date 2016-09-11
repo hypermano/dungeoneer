@@ -1,25 +1,54 @@
 var React = require("react");
 var Link = require("react-router").Link;
 var KeyBinder = require("../decorators/KeyBinder");
+var DungeonActions = require("../actions/DungeonActions");
+var DungeonStore = require("../stores/DungeonStore");
 
 var _options = ["crawl", "build", "select"];
+
+function getDungeonState() {
+	return DungeonStore.get();
+}
 
 @KeyBinder
 class App extends React.Component {
 	state = {
 		options: _options,
-		extra: ""
+		extra: "",
+		plan: getDungeonState()
 	};
 
 	constructor() {
 		super();
-		this._onExtraChange = this._onExtraChange.bind(this);
+		this._onChildComponentChange = this._onChildComponentChange.bind(this);
+		this._onChange = this._onChange.bind(this);
+
+		this._lastPos = {};
 	}
 
-	_onExtraChange(extra, isUpdate) {
-		var value = (isUpdate)? extra : JSON.stringify(extra);
+	_onChange() {
 		this.setState({
-			extra: value
+			plan: getDungeonState()
+		});
+	}
+
+	_onChildComponentChange(ctx) {
+		var newExtra;
+		switch (ctx.source) {
+		case "text":
+			newExtra = ctx.text;
+			DungeonActions.updateRoomDescription(this._lastPos.x, this._lastPos.y, newExtra);
+			break;
+		case "click":
+			this._lastPos = {
+				x: ctx.pos.x,
+				y: ctx.pos.y
+			};
+			newExtra = ctx.room.description;
+			break;
+		}
+		this.setState({
+			extra: newExtra
 		});
 	}
 
@@ -37,6 +66,7 @@ class App extends React.Component {
 	}
 
 	componentDidMount() {
+		DungeonStore.addChangeListener(this._onChange);
 		this.bindKey(["ctrl+left"], () => {
 			this.context.router.push({
 				pathname: "/" + this.state.options[0]
@@ -51,18 +81,23 @@ class App extends React.Component {
 		});
 	}
 
+	componentWillUnmount() {
+		DungeonStore.removeChangeListener(this._onChange);
+	}
+
 	render() {
 		var left = this.state.options[0];
 		var right = this.state.options[2];
 
 		var main = React.cloneElement(this.props.main, {
-			onExtraChange: this._onExtraChange
+			onComponentChange: this._onChildComponentChange,
+			plan: this.state.plan
 		});
 		var rest;
 		if (this.props.rest) {
 			rest = React.cloneElement(this.props.rest, {
 				extra: this.state.extra,
-				onExtraChange: this._onExtraChange
+				onComponentChange: this._onChildComponentChange
 			});
 		}
 

@@ -1,15 +1,16 @@
 var React = require("react");
 var styles = require("../styles/styles");
 var DungeonBlock = require("../data/DungeonBlock").DungeonBlock;
-var FuncUtils = require("../utils/FuncUtils");
 require("../styles/styles.scss");
+
+var NOOP = function() {};
 
 /**
 */
-var DungeonRoom = (props) => {
-	var createRoomStyles = function(room) {
+const DungeonRoom = ({room, hasAvatar, isSelected, onRoomClick}) => {
+	var createRoomStyles = function(target) {
 		var res = {};
-		if (!room.isEmpty) {
+		if (!target.isEmpty) {
 			var borders = {
 				"borderLeft": (room) => room.hasLeftWall,
 				"borderRight": (room) => room.hasRightWall,
@@ -18,13 +19,13 @@ var DungeonRoom = (props) => {
 			};
 
 			for (var b in borders) {
-				if (borders[b](room)) {
+				if (borders[b](target)) {
 					res[b] = styles.brickWallBorder;
 				}
 			}
 
-			if (room.type.color) {
-				res["backgroundColor"] = room.type.color;
+			if (target.type.color) {
+				res["backgroundColor"] = target.type.color;
 			}
 		}
 
@@ -32,18 +33,18 @@ var DungeonRoom = (props) => {
 	};
 
 	var optionalAvatar;
-	if (props.hasAvatar) {
+	if (hasAvatar) {
 		optionalAvatar = <div className="character--avatar"/>;
 	}
 
-	var roomStyles = createRoomStyles(props.room);
-	if (props.isSelected) {
+	var roomStyles = createRoomStyles(room);
+	if (isSelected) {
 		roomStyles.backgroundColor = "gold";
 	}
-	var className = !props.room.isEmpty? "dungeon--room__normal" : "dungeon--room__empty";
+	var className = !room.isEmpty? "dungeon--room__normal" : "dungeon--room__empty";
 	var handleMouseDrag = (e) => {
 		if (e.buttons == 1) {
-			props.onRoomClick();
+			onRoomClick();
 		}
 	};
 
@@ -51,7 +52,7 @@ var DungeonRoom = (props) => {
 		<div 
 			className={className}
 			style={roomStyles} 
-			onClick={props.onRoomClick}
+			onClick={onRoomClick}
 			onMouseOver={handleMouseDrag}		
 		>
 			{optionalAvatar}
@@ -70,22 +71,24 @@ DungeonRoom.propTypes = {
 
 /**
 */
-var DungeonFloor = (props) => {
-	var rendered = props.rooms.map((room, index) => {
-		var pos = {
-			x: index,
-			y: props.level
+var DungeonFloor = ({rooms, level, selections, avatarPosition, onRoomClick, ...rest}) => {
+	var rendered = rooms.map((room, index) => {
+		var ctx = {
+			source: "click",
+			pos: {
+				x: index,
+				y: level
+			},
+			room: room
 		};
-		var extraProps = {};
-		if (props.avatarPosition && props.avatarPosition.x == index) {
-			extraProps.hasAvatar = true;
-		}
-		return <DungeonRoom 					
+		var hasAvatar = (avatarPosition && avatarPosition.y == level && avatarPosition.x == index);
+		return <DungeonRoom
 					key={"dr-" + index}
 					room={room}
-					isSelected={props.selections && props.selections[index]}
-					onRoomClick={FuncUtils.compound(props.onRoomClick, props.onExtraChange).bind(null, pos, false)}
-					{...extraProps}
+					isSelected={selections && selections[index]}
+					onRoomClick={(onRoomClick || NOOP).bind(null, ctx)}
+					hasAvatar={hasAvatar}
+					{...rest}
 				/>;
 	});
 	
@@ -100,7 +103,7 @@ DungeonFloor.propTypes = {
 	level: React.PropTypes.number.isRequired,
 	selections: React.PropTypes.array,
 	onRoomClick: React.PropTypes.func,
-	onExtraChange: React.PropTypes.func,
+	avatarPosition: React.PropTypes.object,
 	rooms: React.PropTypes.arrayOf(
 		React.PropTypes.instanceOf(
 			DungeonBlock
@@ -110,13 +113,9 @@ DungeonFloor.propTypes = {
 
 /**
 */
-var DungeonWing = (props) => {
-	var floors = props.plan.map(function(floor, yIndex) {
-		var {selections, avatarPosition, ...rest} = props;
-		if (avatarPosition && avatarPosition.y == yIndex) {
-			rest.avatarPosition = props.avatarPosition;
-		}
-		return <DungeonFloor 
+const DungeonWing = ({plan, selections, ...rest}) => {
+	var floors = plan.map(function(floor, yIndex) {
+		return <DungeonFloor
 					key={"dw-" + yIndex} 
 					level={yIndex} 
 					rooms={floor}
@@ -141,13 +140,12 @@ DungeonWing.propTypes = {
 			)
 		).isRequired,
 	selections: React.PropTypes.array,
-	onRoomClick: React.PropTypes.func,
-	avatarPosition: React.PropTypes.object
+	onRoomClick: React.PropTypes.func
 };
 
 /**
 */
-var Dungeon = function(props) {
+const Dungeon = function(props) {
 	return (
 		<div>
 			<h1>Dungeon</h1>

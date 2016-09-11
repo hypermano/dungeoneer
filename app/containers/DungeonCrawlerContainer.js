@@ -1,15 +1,13 @@
 var React = require("react");
 var Dungeon = require("../components/Dungeon");
-var DungeonStore = require("../stores/DungeonStore");
 var XYStore = require("../stores/XYStore");
 var XYActions = require("../actions/XYActions");
-var DungeonUtils = require("../utils/DungeonUtils");
 var KeyBinder = require("../decorators/KeyBinder");
 
 function getPosition() {
 	return {
-		x: XYStore.getX(),
-		y: XYStore.getY()
+		x: XYStore.getAvatarX(),
+		y: XYStore.getAvatarY()
 	};
 }
 
@@ -59,11 +57,19 @@ class DungeonCrawlerContainer extends React.Component {
 	render() {
 		return (
 			<Dungeon 
-				plan={DungeonUtils.schematicsToDungeonRooms(DungeonStore.get())}
+				plan={this.props.plan}
 				avatarPosition={this.state.position}
 			/>
 		);
 	}
 }
+
+DungeonCrawlerContainer.propTypes = {
+	plan: React.PropTypes.arrayOf(
+		React.PropTypes.arrayOf(
+			React.PropTypes.object
+			)
+		)
+};
 
 module.exports = DungeonCrawlerContainer;

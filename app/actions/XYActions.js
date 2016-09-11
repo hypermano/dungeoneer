@@ -6,7 +6,7 @@ var ActionTypes = DungeonConstants.ActionTypes;
 var XYActions = {
 	updateCoordinates: function(x, y) {
 		AppDispatcher.handleViewAction({
-			actionType: ActionTypes.UPDATE_COORDINATES,
+			actionType: ActionTypes.UPDATE_AVATAR_COORDINATES,
 			x: x,
 			y: y
 		});

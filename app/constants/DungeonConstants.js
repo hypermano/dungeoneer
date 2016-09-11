@@ -6,6 +6,7 @@ module.exports = {
 	}),
 	ActionTypes: keyMirror({
 		SCHEMATICS_UPDATE: null,
-		UPDATE_COORDINATES: null
+		ROOM_DESCRIPTION_CHANGE: null,
+		UPDATE_AVATAR_COORDINATES: null
 	})
 };
